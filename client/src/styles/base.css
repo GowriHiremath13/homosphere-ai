@@ -1,0 +1,66 @@
+:root {
+  --bg: #080b16;
+  --bg-deep: #04060c;
+  --surface: #121a2e;
+  --surface-2: #182241;
+  --border: #263355;
+  --border-soft: #1c2740;
+  --text: #f3f6fc;
+  --text-dim: #a9b4d0;
+  --text-faint: #6d7996;
+  --accent: #ffc857;
+  --accent-soft: #4a3a14;
+  --teal: #5eead4;
+  --coral: #ff7a72;
+  --green: #7ee2a8;
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+  --font-display: 'Segoe UI', 'Helvetica Neue', Arial, system-ui, sans-serif;
+  --font-body: 'Segoe UI', 'Helvetica Neue', Arial, system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+h1, h2, h3 { font-family: var(--font-display); margin: 0; letter-spacing: -0.01em; }
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+button, input, select { font-family: inherit; color: inherit; }
+button { background: none; border: none; cursor: pointer; }
+input, select {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+.muted { color: var(--text-dim); }
+.error-text { color: var(--coral); }
+
+.pill { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 999px; font-size: 0.8em; font-weight: 700; letter-spacing: 0.02em; }
+.pill-high { background: rgba(255, 122, 114, 0.18); color: var(--coral); }
+.pill-medium { background: rgba(255, 200, 87, 0.18); color: var(--accent); }
+.pill-low { background: rgba(94, 234, 212, 0.16); color: var(--teal); }
+
+.toast-stack { position: fixed; top: 40px; right: 50px; display: flex; flex-direction: column; gap: 12px; z-index: 500; }
+.toast {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surface-2); border: 1px solid var(--border);
+  padding: 16px 22px; border-radius: var(--radius-sm);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  font-size: 20px; cursor: pointer;
+}
+.toast-success { border-color: rgba(126, 226, 168, 0.5); }
+.toast-task { border-color: rgba(255, 200, 87, 0.5); }
+.toast-error { border-color: rgba(255, 122, 114, 0.5); }

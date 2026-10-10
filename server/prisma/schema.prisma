@@ -1,0 +1,138 @@
+// HomeSphere AI - Prisma schema (PostgreSQL)
+//
+// Single-household app: every Task/Schedule/Device/AIConversation row belongs to the
+// one household User row (created automatically on first run). Enum values are kept
+// lowercase/exact-match to the app's existing string constants (e.g. "pending",
+// "in_progress", "ai") so the API layer needs no relabeling between the database and
+// the client.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  name        String   @default("Alex")
+  // Free-form app settings (currently just { demoMode: boolean }).
+  preferences Json     @default("{}")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tasks         Task[]
+  schedules     Schedule[]
+  devices       Device[]
+  conversations AiConversation[]
+
+  @@map("users")
+}
+
+enum Priority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum TaskStatus {
+  pending
+  in_progress
+  done
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  title       String
+  description String     @default("")
+  priority    Priority   @default(MEDIUM)
+  status      TaskStatus @default(pending)
+  dueDate     DateTime?
+  // Who/what created it: "tv" | "phone" | "demo" (free text, distinct from the userId relation below)
+  createdBy   String     @default("tv")
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([userId])
+  @@map("tasks")
+}
+
+enum ScheduleSource {
+  user
+  ai
+  demo
+}
+
+model Schedule {
+  id        String         @id @default(cuid())
+  title     String
+  startTime String // "HH:MM", 24h
+  endTime   String // "HH:MM", 24h
+  date      String // "YYYY-MM-DD"
+  source    ScheduleSource @default(user)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([date])
+  @@index([userId])
+  @@map("schedule_entries")
+}
+
+model Device {
+  id               String    @id @default(cuid())
+  deviceId         String    @unique
+  name             String    @default("Living Room TV")
+  pairingCode      String?
+  pairingExpiresAt DateTime?
+  connectedAt      DateTime?
+  // SHA-256 hashes of session tokens issued to paired phones (raw tokens are never stored)
+  tokenHashes      String[]  @default([])
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([pairingCode])
+  @@index([userId])
+  @@map("devices")
+}
+
+enum MessageRole {
+  user
+  assistant
+}
+
+enum MessageSource {
+  tv
+  phone
+  system
+}
+
+// Named "AiConversation" (not "AIConversation") purely so Prisma's generated client
+// property is the unambiguous `prisma.aiConversation` rather than the awkward
+// `prisma.aIConversation` that consecutive capitals would otherwise produce.
+// The actual table name (@@map below) is still "ai_conversations".
+model AiConversation {
+  id        String        @id @default(cuid())
+  role      MessageRole
+  message   String
+  source    MessageSource @default(tv)
+  timestamp DateTime      @default(now())
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([timestamp])
+  @@index([userId])
+  @@map("ai_conversations")
+}

@@ -1,0 +1,26 @@
+{
+  "name": "homesphere-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HomeSphere AI - TV-first household dashboard for Amazon Fire TV / Vega OS",
+  "workspaces": ["client", "server"],
+  "engines": { "node": ">=18.17" },
+  "scripts": {
+    "install:all": "npm install",
+    "dev": "concurrently -n server,client -c cyan,yellow \"npm run dev -w server\" \"npm run dev -w client\"",
+    "dev:server": "npm run dev -w server",
+    "dev:client": "npm run dev -w client",
+    "build": "npm run build -w client",
+    "start": "npm run start -w server",
+    "test": "npm test -w server",
+    "prisma:generate": "npm run prisma:generate -w server",
+    "prisma:migrate": "npm run prisma:migrate -w server",
+    "prisma:deploy": "npm run prisma:deploy -w server",
+    "prisma:seed": "npm run prisma:seed -w server",
+    "prisma:studio": "npm run prisma:studio -w server",
+    "prisma:reset": "npm run prisma:reset -w server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
